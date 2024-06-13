@@ -175,8 +175,8 @@ extension App.Store {
     public func logStateMutations() -> String {
         
         let dateFormatterGet = DateFormatter()
-        dateFormatterGet.dateFormat = "HH:mm:ss"
-        var str = "InitialState:\n\(initialStateDescription)\n"
+        dateFormatterGet.dateFormat = "HH:mm:ss dd-MM"
+        var str = "InitialState:\n\(initialStateDescription)\n\n"
         queue.sync {
             
             for (index, (action, date, actor)) in actions.enumerated() {
