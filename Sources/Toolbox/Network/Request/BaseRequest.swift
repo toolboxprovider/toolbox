@@ -114,6 +114,7 @@ public extension BaseRequest {
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
         request.timeoutInterval = 30
+        request.cachePolicy = .reloadIgnoringCacheData
         
         if let h = headers {
             for (key, value) in h {
