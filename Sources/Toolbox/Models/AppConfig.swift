@@ -62,12 +62,14 @@ public enum App {
                 networkEncoder: JSONEncoder = .init(),
                 networkDecoder: JSONDecoder = .init(),
                 session: Alamofire.Session = AF,
+                cachePolicy: URLRequest.CachePolicy = .useProtocolCachePolicy,
                 authRequestHeaders: AuthRequestHeaders? = nil,
                 customErrorMapper: CustomErrorMapper? = nil) {
                     self.baseNetworkURL = baseNetworkURL
                     self.networkEncoder = networkEncoder
                     self.networkDecoder = networkDecoder
                     self.session = session
+                    self.cachePolicy = cachePolicy
                     self.customErrorMapper = customErrorMapper
                     self.authRequestHeaders = authRequestHeaders
                 }
@@ -75,6 +77,7 @@ public enum App {
             let baseNetworkURL: URLConvertible
             let networkEncoder: JSONEncoder
             let networkDecoder: JSONDecoder
+            let cachePolicy: URLRequest.CachePolicy
             let customErrorMapper: CustomErrorMapper?
             let authRequestHeaders: AuthRequestHeaders?
             let session: Alamofire.Session
