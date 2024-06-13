@@ -11,8 +11,6 @@ import Foundation
 import Alamofire
 import RxSwift
 
-typealias Headers = [AnyHashable: Any]
-
 public protocol RequestOutput {
     
     associatedtype T
@@ -58,15 +56,15 @@ public extension RequestOutput where T == Void {
 
 public extension RequestOutput where T == Data {
     
-    func rawResponse() async throws -> T {
-        try await bottleNeck().body
+    func rawResponse() async throws -> (T, HTTPURLResponse?) {
+        try await bottleNeck()
     }
     
 }
 
 public extension RequestOutput {
     
-    fileprivate func bottleNeck(  ) async throws -> (body: Data, headers: Headers?) {
+    fileprivate func bottleNeck(  ) async throws -> (body: Data, response: HTTPURLResponse?) {
         let request = try await urlRequest()
         
         return try await withTaskCancellationHandler {
@@ -91,7 +89,7 @@ public extension RequestOutput {
                             fatalError("Result is not success and not error")
                         }
                         
-                        continuation.resume(returning: (mappedResponse, response.response?.allHeaderFields))
+                        continuation.resume(returning: (mappedResponse, response.response))
                     }
             }
         } onCancel: {
@@ -100,7 +98,7 @@ public extension RequestOutput {
 
     }
     
-    fileprivate func rxBottleNeck(  ) -> Single<(body: Data, headers: Headers?)> {
+    fileprivate func rxBottleNeck(  ) -> Single<(body: Data, response: HTTPURLResponse?)> {
         
         Single.fromAsync(f: bottleNeck)
         
