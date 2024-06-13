@@ -64,7 +64,7 @@ public extension RequestOutput where T == Data {
 
 public extension RequestOutput {
     
-    fileprivate func bottleNeck(  ) async throws -> (body: Data, response: HTTPURLResponse?) {
+    func bottleNeck( customHandling: Bool = false ) async throws -> (body: Data, response: HTTPURLResponse?) {
         let request = try await urlRequest()
         
         return try await withTaskCancellationHandler {
@@ -73,6 +73,10 @@ public extension RequestOutput {
                     .validate()
                     .responseData(emptyResponseCodes: [200, 204, 205]) { (response: AFDataResponse<Data>) in
 
+                        if customHandling, let x = response.data, let r = response.response {
+                            return continuation.resume(with: .success((x, r)))
+                        }
+                        
                         if let e = response.error {
                             
                             if let customError = appConfig.network?.customErrorMapper?(e, response.data ?? Data()) {
