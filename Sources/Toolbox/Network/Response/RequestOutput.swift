@@ -64,7 +64,11 @@ public extension RequestOutput where T == Data {
 
 public extension RequestOutput {
     
-    func bottleNeck( customHandling: Bool = false ) async throws -> (body: Data, response: HTTPURLResponse?) {
+    func bottleNeck( ) async throws -> (body: Data, response: HTTPURLResponse?) {
+        return try await bottleNeck( customHandling: false )
+    }
+    
+    func bottleNeck( customHandling: Bool ) async throws -> (body: Data, response: HTTPURLResponse?) {
         let request = try await urlRequest()
         
         return try await withTaskCancellationHandler {
@@ -104,7 +108,7 @@ public extension RequestOutput {
     
     fileprivate func rxBottleNeck(  ) -> Single<(body: Data, response: HTTPURLResponse?)> {
         
-        Single.fromAsync(f: bottleNeck)
+        Single.fromAsync(f: bottleNeck )
         
     }
     
