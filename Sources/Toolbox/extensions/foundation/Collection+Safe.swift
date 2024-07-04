@@ -56,10 +56,10 @@ public extension Array where Element: Identifiable {
     ///@parameter circular, if true first is returned next after last
     func next(after: Element.ID, circular: Bool = false) -> Element? {
         guard let i = element(match: after)?.index else {
-            return circular ? first : nil
+            return nil
         }
         
-        return self[safe: i+1]
+        return self[safe: i+1] ?? (circular ? first : nil)
     }
     
     subscript (id id: Element.ID) -> Element? { element(match: id)?.value }
