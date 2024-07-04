@@ -53,8 +53,11 @@ public extension Array where Element: Identifiable {
         }
     }
  
-    func next(after: Element) -> Element? {
-        guard let i = element(match: after.id)?.index else { return nil }
+    ///@parameter circular, if true first is returned next after last
+    func next(after: Element, circular: Bool = false) -> Element? {
+        guard let i = element(match: after.id)?.index else {
+            return circular ? first : nil
+        }
         
         return self[safe: i+1]
     }
