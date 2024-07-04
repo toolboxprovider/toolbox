@@ -62,7 +62,7 @@ public extension Array where Element: Identifiable {
         return self[safe: i+1]
     }
     
-    subscript (id: Element.ID) -> Element? { element(match: id)?.value }
+    subscript (id id: Element.ID) -> Element? { element(match: id)?.value }
 }
 
 public extension Array {
