@@ -99,7 +99,7 @@ public struct DiskSetting<T: Codable> {
     }
     
     private func url(for key: String) -> URL {
-        cacheDirectory.appending(path: "store_\(key)")
+        cacheDirectory.appendingPathComponent("store_\(key)")
     }
     
     private var cacheDirectory: URL = FileManager.default
