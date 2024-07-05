@@ -251,8 +251,6 @@ public extension Encodable where Self : UserDefaultsStorable {
     
 }
 
-public extension Codable: UserDefaultsStorable {}
-
 public extension Decodable where Self: UserDefaultsStorable {
     
     init?(key: String) {
