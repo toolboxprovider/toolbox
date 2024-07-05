@@ -53,6 +53,59 @@ public struct Setting<T: UserDefaultsStorable> {
     
 }
 
+public struct DiskSetting<T: Codable> {
+    
+    public var value: T {
+        get {
+            return variableValue.value
+        }
+        set {
+            variableValue.accept(newValue)
+        }
+        
+    }
+    
+    public var observable: Observable<T> {
+        return variableValue.asObservable()
+    }
+    
+    fileprivate let variableValue: BehaviorRelay<T>
+    fileprivate let bag = DisposeBag()
+    
+    public init (key: String, initialValue: T) {
+        
+        let x: T
+        if let d = try? Data(contentsOf: url(for: key)),
+           let v = try? JSONDecoder().decode(T.self, from: d) {
+            x = v
+        } else {
+            x = initialValue
+        }
+        
+        variableValue = BehaviorRelay( value: x )
+        
+        variableValue.asObservable()
+            .skip(1) /// no need to encode initial value
+            .subscribe(onNext: { (newValue) in
+                
+                guard let x = try? JSONEncoder().encode(newValue) else {
+                    return
+                }
+                
+                try? x.write(to: url(for: key))
+                
+            })
+            .disposed(by: bag)
+    }
+    
+    private func url(for key: String) -> URL {
+        cacheDirectory.appending(path: "store_\(key)")
+    }
+    
+    private lazy var cacheDirectory: URL = FileManager.default
+            .urls(for: .documentDirectory, in: .userDomainMask)[0]
+}
+
 
 extension Bool : UserDefaultsStorable {
     
@@ -197,6 +250,8 @@ public extension Encodable where Self : UserDefaultsStorable {
     }
     
 }
+
+public extension Codable: UserDefaultsStorable {}
 
 public extension Decodable where Self: UserDefaultsStorable {
     
