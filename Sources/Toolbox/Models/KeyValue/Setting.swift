@@ -74,8 +74,12 @@ public struct DiskSetting<T: Codable> {
     
     public init (key: String, initialValue: T) {
         
+        let url = FileManager.default
+            .urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("store_\(key)")
+        
         let x: T
-        if let d = try? Data(contentsOf: url(for: key)),
+        if let d = try? Data(contentsOf: url),
            let v = try? JSONDecoder().decode(T.self, from: d) {
             x = v
         } else {
@@ -92,18 +96,12 @@ public struct DiskSetting<T: Codable> {
                     return
                 }
                 
-                try? x.write(to: url(for: key))
+                try? x.write(to: url)
                 
             })
             .disposed(by: bag)
     }
     
-    private func url(for key: String) -> URL {
-        cacheDirectory.appendingPathComponent("store_\(key)")
-    }
-    
-    private var cacheDirectory: URL = FileManager.default
-            .urls(for: .documentDirectory, in: .userDomainMask)[0]
 }
 
 
