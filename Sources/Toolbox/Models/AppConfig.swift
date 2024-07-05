@@ -96,8 +96,13 @@ public enum App {
                 return .never()
             }
         }) {
+            #if os(tvOS)
+            diskStore = DiskSetting(key: appStateSettingsKey,
+                                    initialValue: .default)
+            #else
             diskStore = Setting(key: appStateSettingsKey,
                                 initialValue: .default)
+            #endif
             memmoryStore = .init(value: diskStore.value)
             initialStateDescription = "\(diskStore.value)"
             
