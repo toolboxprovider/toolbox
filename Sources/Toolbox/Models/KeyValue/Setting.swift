@@ -102,7 +102,7 @@ public struct DiskSetting<T: Codable> {
         cacheDirectory.appending(path: "store_\(key)")
     }
     
-    private lazy var cacheDirectory: URL = FileManager.default
+    private var cacheDirectory: URL = FileManager.default
             .urls(for: .documentDirectory, in: .userDomainMask)[0]
 }
 
