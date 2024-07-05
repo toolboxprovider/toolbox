@@ -115,7 +115,11 @@ public enum App {
             
         }
         
+#if os(tvOS) ///tvOS is very limitted with storing data in UserDefaults
+        var diskStore: DiskSetting<T>
+#else
         var diskStore: Setting<T>
+#endif
         let memmoryStore: BehaviorRelay<T>
         
         let initialStateDescription: String
