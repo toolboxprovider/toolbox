@@ -75,7 +75,7 @@ public struct DiskSetting<T: Codable> {
     public init (key: String, initialValue: T) {
         
         let url = FileManager.default
-            .urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .urls(for: .cachesDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("store_\(key)")
         
         let x: T
