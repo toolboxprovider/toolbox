@@ -18,11 +18,15 @@ public class SmartImageView: UIImageView, StackableView {
             case image(UIImage)
             case initials(String)
         };
-        public var placeholder: Placeholder? = nil
+        public var placeholder: Placeholder?
+        public let preferredHeight: CGFloat?
         
-        public init(image: SmartImageView.Props.Image, placeholder: Placeholder? = nil) {
+        public init(image: SmartImageView.Props.Image, 
+                    placeholder: Placeholder? = nil,
+                    preferredHeight: CGFloat? = nil) {
             self.image = image
             self.placeholder = placeholder
+            self.preferredHeight = preferredHeight
         }
         
         public static var initial: Props { .init(image: .url(nil)) }
@@ -76,6 +80,13 @@ public class SmartImageView: UIImageView, StackableView {
             
         }
         
+        contentMode = .scaleAspectFit
+        
+        if let x = props.preferredHeight {
+            snp.remakeConstraints { make in
+                make.height.equalTo(x)
+            }
+        }
     }
     
     lazy var label: UILabel = {
