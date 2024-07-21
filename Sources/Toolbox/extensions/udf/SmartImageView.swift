@@ -21,7 +21,7 @@ public class SmartImageView: UIImageView, StackableView {
         public var placeholder: Placeholder?
         public let preferredHeight: CGFloat?
         
-        public init(image: SmartImageView.Props.Image, 
+        public init(image: SmartImageView.Props.Image,
                     placeholder: Placeholder? = nil,
                     preferredHeight: CGFloat? = nil) {
             self.image = image
@@ -79,8 +79,6 @@ public class SmartImageView: UIImageView, StackableView {
                 .disposed(by: bag)
             
         }
-        
-        contentMode = .scaleAspectFit
         
         if let x = props.preferredHeight {
             snp.remakeConstraints { make in
