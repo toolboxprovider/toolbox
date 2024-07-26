@@ -155,6 +155,29 @@ public enum App {
             
         }
         
+        public func testableDispatch<A: ReduxAction>
+        (action: A, actor: CustomStringConvertible? = nil) where A.T == T {
+            
+            queue.sync { [unowned self] in
+                
+                var dscr = "\(action)"
+                if let x = actor?.description {
+                    dscr.append(" by \(x) actor")
+                }
+                appConfig.reduxActionDispatched(with: dscr)
+                actions.append((dscr, Date(), actor?.description))
+                
+                var newState = memmoryStore.value
+                action.apply(to: &newState)
+                
+                if newState != memmoryStore.value {
+                    memmoryStore.accept(newState)
+                }
+                
+            }
+            
+        }
+        
         public func dispatchCommand<A: ReduxAction>
         (action: A, actor: CustomStringConvertible? = nil) -> Command where A.T == T  {
             return Command {
