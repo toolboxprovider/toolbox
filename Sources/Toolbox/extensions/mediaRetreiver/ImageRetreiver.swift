@@ -14,13 +14,16 @@ import Kingfisher
 
 public extension Reactive where Base: UIImageView {
     
-    func download(url: String?, size: CGSize? = nil, placeholder: UIImage? = nil) -> Observable<Void> {
+    func download(url: String?, size: CGSize? = nil, options opts: [KingfisherOptionsInfoItem] = [],
+                  placeholder: UIImage? = nil) -> Observable<Void> {
         
         return Observable<Void>.create { (subscriber) -> Disposable in
 
-            var options: KingfisherOptionsInfo =
-                [.transition(.fade(0.5)),
-                 .onFailureImage(placeholder)]
+            var options: KingfisherOptionsInfo = [
+//                .transition(.fade(0.5)),
+                .onFailureImage(placeholder)
+            ]
+            options.append(contentsOf: opts)
             
             if let x = size {
                 options.append( .processor( DownsamplingImageProcessor(size: x) ) )
