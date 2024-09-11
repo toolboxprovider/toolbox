@@ -136,8 +136,10 @@ public class SmartStackView: UIStackView, StackableView {
             let v = ShadowContainerView()
             v.sketchShadow = x
             insertSubview(v, at: 0)
-            v.snp.makeConstraints { $0.edges.equalToSuperview() }
+            v.snp.makeConstraints { $0.edges.equalToSuperview().inset(8) }
+            v.backgroundColor = .gray
             v.layer.cornerRadius = props.border?.cornerRadius ?? 0
+            v.layer.applySketch(shadow: x)
         }
         
         func superMap<T: StackableView, U: StackableProp>( view: inout T, prop: U) -> Bool {
