@@ -133,6 +133,7 @@ public class SmartStackView: UIStackView, StackableView {
         layoutMargins.bottom = props.border?.margins ?? 0
         backgroundColor = props.backgroundColor ?? .clear
         if let x = props.shadow, subviews.contains(where: { $0 is ShadowContainerView }) == false {
+            layer.masksToBounds = false
             let v = ShadowContainerView()
             insertSubview(v, at: 0)
             v.snp.makeConstraints { $0.edges.equalToSuperview() }
