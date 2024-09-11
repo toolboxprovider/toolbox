@@ -175,7 +175,7 @@ public class SmartStackView: UIView, StackableView {
         
     }
     
-    let stackView = UIStackView()
+    public let stackView = UIStackView()
     let shadowContainer = ShadowContainerView()
     
     public init(props: Props) {
