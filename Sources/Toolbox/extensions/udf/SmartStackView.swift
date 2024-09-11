@@ -62,7 +62,7 @@ public protocol StackableView {
 //    
 //}
 
-public class SmartStackView: UIStackView, StackableView {
+public class SmartStackView: UIView, StackableView {
 
     public struct Props {
         
@@ -123,24 +123,18 @@ public class SmartStackView: UIStackView, StackableView {
     
     func render(oldValue: Props) {
         
-        self.spacing = props.spacing
-        axis = props.axis
-        alignment = props.alignment
-        distribution = props.distribution
-        layoutMargins.left = props.margins
-        layoutMargins.right = props.margins
-        layoutMargins.top = props.border?.margins ?? 0
-        layoutMargins.bottom = props.border?.margins ?? 0
-        backgroundColor = props.backgroundColor ?? .clear
-        if let x = props.shadow, subviews.contains(where: { $0 is ShadowContainerView }) == false {
-            let v = ShadowContainerView()
-            v.sketchShadow = x
-            insertSubview(v, at: 0)
-            v.snp.makeConstraints { $0.edges.equalToSuperview().inset(8) }
-            v.backgroundColor = .gray
-            v.layer.cornerRadius = props.border?.cornerRadius ?? 0
-            v.layer.applySketch(shadow: x)
-        }
+        stackView.spacing = props.spacing
+        stackView.axis = props.axis
+        stackView.alignment = props.alignment
+        stackView.distribution = props.distribution
+        stackView.layoutMargins.left = props.margins
+        stackView.layoutMargins.right = props.margins
+        stackView.layoutMargins.top = props.border?.margins ?? 0
+        stackView.layoutMargins.bottom = props.border?.margins ?? 0
+        stackView.backgroundColor = props.backgroundColor ?? .clear
+        shadowContainer.isVisible = props.shadow != nil
+        shadowContainer.sketchShadow = props.shadow
+        shadowContainer.layer.cornerRadius = props.border?.cornerRadius ?? 0
         
         func superMap<T: StackableView, U: StackableProp>( view: inout T, prop: U) -> Bool {
             
@@ -153,8 +147,8 @@ public class SmartStackView: UIStackView, StackableView {
         }
         
         var binded = false
-        if arrangedSubviews.count == props.stack.count {
-            for (view, prop) in zip(arrangedSubviews, props.stack) {
+        if stackView.arrangedSubviews.count == props.stack.count {
+            for (view, prop) in zip(stackView.arrangedSubviews, props.stack) {
                 guard var x = view as? any StackableView else {
                     print("SmartStack Warning, \(view.self) is not a StackableView, can't apply diffing policy. Will reload the whole stack at every render")
                     binded = false
@@ -167,19 +161,22 @@ public class SmartStackView: UIStackView, StackableView {
         }
         
         if binded == false {
-            arrangedSubviews.forEach { $0.removeFromSuperview() }
+            stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
             props.stack
                 .map(\.nibView)
                 .forEach { x in
-                    addArrangedSubview(x)
+                    stackView.addArrangedSubview(x)
                 }
         }
         
-        layer.borderWidth = props.border?.width ?? 0
-        layer.cornerRadius = props.border?.cornerRadius ?? 0
-        layer.borderColor = props.border?.color.cgColor
+        stackView.layer.borderWidth = props.border?.width ?? 0
+        stackView.layer.cornerRadius = props.border?.cornerRadius ?? 0
+        stackView.layer.borderColor = props.border?.color.cgColor
         
     }
+    
+    let stackView = UIStackView()
+    let shadowContainer = ShadowContainerView()
     
     public init(props: Props) {
         super.init(frame: .zero)
@@ -189,14 +186,19 @@ public class SmartStackView: UIStackView, StackableView {
     }
     
     required init(coder: NSCoder) {
-        super.init(coder: coder)
+        super.init(coder: coder)!
         
         setUp()
     }
     
     func setUp() {
         
-        isLayoutMarginsRelativeArrangement = true
+        backgroundColor = .clear
+        
+        embed(view: shadowContainer)
+        embed(view: stackView)
+        
+        stackView.isLayoutMarginsRelativeArrangement = true
         
 #if os(iOS)
         rx.keyboadChange
