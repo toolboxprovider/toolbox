@@ -74,6 +74,7 @@ public class SmartStackView: UIStackView, StackableView {
         public let keyboardJump: Bool
         public let border: Border?
         public let backgroundColor: UIColor?
+        public let shadow: CALayer.SketchShadow?
         public let stack: [any StackableProp]
         
         public struct Border {
@@ -98,6 +99,7 @@ public class SmartStackView: UIStackView, StackableView {
                     distribution: UIStackView.Distribution = .fill,
                     border: Border? = nil,
                     backgroundColor: UIColor? = nil,
+                    shadow: CALayer.SketchShadow? = nil,
                     stack: [(any StackableProp)?]) {
             self.spacing = spacing
             self.margins = margins
@@ -107,6 +109,7 @@ public class SmartStackView: UIStackView, StackableView {
             self.keyboardJump = keyboardJump
             self.border = border
             self.backgroundColor = backgroundColor
+            self.shadow = shadow
             self.stack = stack.compactMap { $0 }
         }
         
@@ -128,8 +131,10 @@ public class SmartStackView: UIStackView, StackableView {
         layoutMargins.right = props.margins
         layoutMargins.top = props.border?.margins ?? 0
         layoutMargins.bottom = props.border?.margins ?? 0
-        
         backgroundColor = props.backgroundColor ?? .clear
+        if let x = props.shadow {
+            layer.applySketch(shadow: x)
+        }
         
         func superMap<T: StackableView, U: StackableProp>( view: inout T, prop: U) -> Bool {
             
