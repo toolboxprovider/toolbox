@@ -164,3 +164,28 @@ public extension CALayer {
         }
     }
 }
+
+class ShadowContainerView: UIView {
+    
+    var sketchShadow: CALayer.SketchShadow? {
+        didSet {
+            guard let shadow = sketchShadow else { return }
+            layer.applySketch(shadow: shadow)
+        }
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        guard let shadow = sketchShadow else { return }
+        
+        if shadow.spread == 0 {
+            layer.shadowPath = nil
+        } else {
+            let dx = -shadow.spread
+            let rect = bounds.insetBy(dx: dx, dy: dx)
+            layer.shadowPath = UIBezierPath(rect: rect).cgPath
+        }
+    }
+    
+}

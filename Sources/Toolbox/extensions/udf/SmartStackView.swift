@@ -133,12 +133,11 @@ public class SmartStackView: UIStackView, StackableView {
         layoutMargins.bottom = props.border?.margins ?? 0
         backgroundColor = props.backgroundColor ?? .clear
         if let x = props.shadow, subviews.contains(where: { $0 is ShadowContainerView }) == false {
-            layer.masksToBounds = false
             let v = ShadowContainerView()
+            v.sketchShadow = x
             insertSubview(v, at: 0)
             v.snp.makeConstraints { $0.edges.equalToSuperview() }
             v.layer.cornerRadius = props.border?.cornerRadius ?? 0
-            v.layer.applySketch(shadow: x)
         }
         
         func superMap<T: StackableView, U: StackableProp>( view: inout T, prop: U) -> Bool {
@@ -251,6 +250,3 @@ extension SmartStackView.Props: StackableProp {
     }
 }
 
-class ShadowContainerView: UIView {
-    
-}
