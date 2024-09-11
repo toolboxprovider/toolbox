@@ -132,12 +132,21 @@ public extension UIView {
 
 public extension CALayer {
     struct SketchShadow {
-        var color: UIColor = .black
-        var alpha: Float = 0.5
-        var x: CGFloat = 0
-        var y: CGFloat = 2
-        var blur: CGFloat = 4
-        var spread: CGFloat = 0
+        public init(color: UIColor = .black, alpha: Float = 0.5, x: CGFloat = 0, y: CGFloat = 2, blur: CGFloat = 4, spread: CGFloat = 0) {
+            self.color = color
+            self.alpha = alpha
+            self.x = x
+            self.y = y
+            self.blur = blur
+            self.spread = spread
+        }
+        
+        let color: UIColor
+        let alpha: Float
+        let x: CGFloat
+        let y: CGFloat
+        let blur: CGFloat
+        let spread: CGFloat
     }
     
     func applySketch(shadow: SketchShadow) {
