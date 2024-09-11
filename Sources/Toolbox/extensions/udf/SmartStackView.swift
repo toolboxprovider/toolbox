@@ -135,6 +135,7 @@ public class SmartStackView: UIView, StackableView {
         shadowContainer.isVisible = props.shadow != nil
         shadowContainer.sketchShadow = props.shadow
         shadowContainer.layer.cornerRadius = props.border?.cornerRadius ?? 0
+        layer.masksToBounds = false
         
         func superMap<T: StackableView, U: StackableProp>( view: inout T, prop: U) -> Bool {
             
