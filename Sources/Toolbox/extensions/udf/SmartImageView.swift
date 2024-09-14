@@ -4,12 +4,16 @@
 import UIKit
 import RxSwift
 
+public protocol SmartImageResource {
+    var pointsTo: String { get }
+}
+
 public class SmartImageView: UIImageView, StackableView {
 
     public struct Props: StackableProp {
         
         public enum Image {
-            case url(String?)
+            case url(SmartImageResource?)
             case value(UIImage)
         };
         public let image: Image
@@ -69,7 +73,7 @@ public class SmartImageView: UIImageView, StackableView {
             image = i
             
         case .url(let u):
-            rx.download(url: u, placeholder: im)
+            rx.download(url: u?.pointsTo, placeholder: im)
                 .subscribe(onCompleted: { [weak self] in
                     if self?.image != nil {
                         self?.label.isHidden = true
@@ -112,4 +116,12 @@ extension SmartImageView.Props {
         return x
     }
     
+}
+
+extension String: SmartImageResource {
+    public var pointsTo: String { self }
+}
+
+extension URL: SmartImageResource {
+    public var pointsTo: String { absoluteString }
 }
