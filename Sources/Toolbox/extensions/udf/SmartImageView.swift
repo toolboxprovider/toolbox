@@ -3,6 +3,7 @@
 
 import UIKit
 import RxSwift
+import Kingfisher
 
 public protocol SmartImageResource {
     var pointsTo: String { get }
@@ -24,13 +25,17 @@ public class SmartImageView: UIImageView, StackableView {
         };
         public var placeholder: Placeholder?
         public let preferredHeight: CGFloat?
+        public let processors: [KingfisherOptionsInfoItem]
         
         public init(image: SmartImageView.Props.Image,
                     placeholder: Placeholder? = nil,
-                    preferredHeight: CGFloat? = nil) {
+                    preferredHeight: CGFloat? = nil,
+                    processors: [KingfisherOptionsInfoItem] = []
+        ) {
             self.image = image
             self.placeholder = placeholder
             self.preferredHeight = preferredHeight
+            self.processors = processors
         }
         
         public static var initial: Props { .init(image: .url(nil)) }
@@ -73,7 +78,7 @@ public class SmartImageView: UIImageView, StackableView {
             image = i
             
         case .url(let u):
-            rx.download(url: u?.pointsTo, placeholder: im)
+            rx.download(url: u?.pointsTo, options: props.processors, placeholder: im)
                 .subscribe(onCompleted: { [weak self] in
                     if self?.image != nil {
                         self?.label.isHidden = true
