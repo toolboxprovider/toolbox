@@ -13,7 +13,7 @@ public class SpinnerView : UIImageView {
     convenience init() {
         self.init(image: appConfig.loaderImage)
         
-        let animationDuration: CFTimeInterval = 0.8
+        let animationDuration: CFTimeInterval = 1.6
         let linearCurve = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
         
         let animation = CABasicAnimation(keyPath: "transform.rotation")
