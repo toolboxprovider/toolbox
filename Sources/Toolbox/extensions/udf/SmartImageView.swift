@@ -25,16 +25,19 @@ public class SmartImageView: UIImageView, StackableView {
         };
         public var placeholder: Placeholder?
         public let preferredHeight: CGFloat?
+        public let contentMode: UIView.ContentMode
         public let processors: [KingfisherOptionsInfoItem]
         
         public init(image: SmartImageView.Props.Image,
                     placeholder: Placeholder? = nil,
                     preferredHeight: CGFloat? = nil,
+                    contentMode: UIView.ContentMode = .scaleToFill,
                     processors: [KingfisherOptionsInfoItem] = []
         ) {
             self.image = image
             self.placeholder = placeholder
             self.preferredHeight = preferredHeight
+            self.contentMode = contentMode
             self.processors = processors
         }
         
@@ -47,6 +50,8 @@ public class SmartImageView: UIImageView, StackableView {
     }
     
     func render() {
+        
+        contentMode = props.contentMode
         
         var im: UIImage?
         switch props.placeholder {
