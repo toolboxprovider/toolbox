@@ -104,7 +104,11 @@ public enum App {
                                 initialValue: .default)
             #endif
             memmoryStore = .init(value: diskStore.value)
-            initialStateDescription = "\(diskStore.value)"
+            
+            let df = DateFormatter()
+            df.dateFormat = "HH:mm:ss dd-MM ZZZZ"
+            df.timeZone = .current
+            initialStateDescription = "\(df.string(from: Date()))\n\(diskStore.value)"
             
             let _ =
             Observable.merge([
@@ -211,7 +215,7 @@ extension App.Store {
         
         let dateFormatterGet = DateFormatter()
         dateFormatterGet.dateFormat = "HH:mm:ss dd-MM"
-        var str = "InitialState:\n\(initialStateDescription)\n\n"
+        var str = "InitialState: \(initialStateDescription)\n\n"
         queue.sync {
             
             for (index, (action, date, actor)) in actions.enumerated() {
