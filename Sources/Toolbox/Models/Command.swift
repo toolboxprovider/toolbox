@@ -180,6 +180,11 @@ public extension UIViewController {
         }
     }
     
+    var dismiss: CommandWith<UIViewController> {
+        return .init { [weak n = self] target in
+            n?.dismiss(animated: true)
+        }
+    }
 }
 
 public struct Selectable<T> {
