@@ -180,7 +180,7 @@ public extension UIViewController {
         }
     }
     
-    var dismiss: CommandWith<UIViewController> {
+    var dismiss: Command {
         return .init { [weak n = self] target in
             n?.dismiss(animated: true)
         }
