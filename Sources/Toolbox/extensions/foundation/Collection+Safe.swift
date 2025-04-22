@@ -64,11 +64,6 @@ public extension Array where Element: Identifiable {
     
     subscript (id id: Element.ID) -> Element? { element(match: id)?.value }
     
-    subscript (circular index: Int) -> Element? {
-        if isEmpty { return nil }
-        return self[ index % count ]
-    }
-    
 }
 
 public extension Array {
@@ -81,6 +76,11 @@ public extension Array {
             i+=2
         }
         return result
+    }
+    
+    subscript (circular index: Int) -> Element? {
+        if isEmpty { return nil }
+        return self[ index % count ]
     }
 }
 
