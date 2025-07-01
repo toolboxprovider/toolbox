@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 import CoreLocation
 
-public extension Driver where Element: AppStateT {
+public extension Driver where Element: AppStateT & Equatable {
     
     func of<T: Equatable>(_ mapper: @escaping (Element) -> T) -> SharedSequence<SharedSequence.SharingStrategy, T> {
         return map(mapper).distinctUntilChanged()

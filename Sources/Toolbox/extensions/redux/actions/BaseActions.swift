@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol AppStateT: Equatable, Codable, UserDefaultsStorable {
+public protocol AppStateT: Codable, UserDefaultsStorable {
     
     static var `default`: Self { get }
     

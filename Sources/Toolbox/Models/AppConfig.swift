@@ -151,9 +151,7 @@ public enum App {
                 var newState = memmoryStore.value
                 action.apply(to: &newState)
                 
-                if newState != memmoryStore.value {
-                    memmoryStore.accept(newState)
-                }
+                memmoryStore.accept(newState)
                 
             }
             
@@ -174,9 +172,7 @@ public enum App {
                 var newState = memmoryStore.value
                 action.apply(to: &newState)
                 
-                if newState != memmoryStore.value {
-                    memmoryStore.accept(newState)
-                }
+                memmoryStore.accept(newState)
                 
             }
             
