@@ -225,8 +225,6 @@ extension App.Store {
 
             }
 
-            actions = []
-            
         }
         
         return str
