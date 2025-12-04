@@ -44,6 +44,13 @@ public extension UIView {
     var indicateProgressPercent: Int? {
         get { fatalError("indicateProgressPercent is setOnly property") }
         set {
+            indicateProgressText = newValue.map { "\($0) %" }
+        }
+    }
+    
+    var indicateProgressText: String? {
+        get { fatalError("indicateProgressText is setOnly property") }
+        set {
             guard let value = newValue else {
                 indicateProgress = false
                 return
@@ -51,7 +58,7 @@ public extension UIView {
             
             indicateProgress = true
             
-            progressView.progressLabel.text = "\(value) %"
+            progressView.progressLabel.text = value
         }
     }
 }
