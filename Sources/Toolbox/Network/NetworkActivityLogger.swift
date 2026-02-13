@@ -191,11 +191,11 @@ public class NetworkActivityLogger {
                         let prettyData = try JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
                         
                         if let prettyString = String(data: prettyData, encoding: .utf8) {
-                            print(prettyString)
+                            self.logFunc(prettyString)
                         }
                     } catch {
                         if let string = NSString(data: data, encoding: String.Encoding.utf8.rawValue) {
-                            print(string)
+                            self.logFunc(string)
                         }
                     }
                 case .info:
