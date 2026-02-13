@@ -195,7 +195,7 @@ public class NetworkActivityLogger {
                         }
                     } catch {
                         if let string = NSString(data: data, encoding: String.Encoding.utf8.rawValue) {
-                            self.logFunc(string)
+                            self.logFunc(string as String)
                         }
                     }
                 case .info:
