@@ -2,7 +2,7 @@ import Foundation
 import RxSwift
 import ObjectiveC
 
-fileprivate var disposeBagContext: UInt8 = 0
+nonisolated(unsafe) fileprivate var disposeBagContext: UInt8 = 0
 
 public extension Reactive where Base: AnyObject {
     func synchronizedBag<T>( _ action: () -> T) -> T {

@@ -15,7 +15,7 @@ public protocol ProgressAnimatable {
     
 }
 
-extension UIViewController: ProgressAnimatable {
+extension UIViewController: @preconcurrency ProgressAnimatable {
     
     public func setLoadingStatus(_ status: Bool) {
     
@@ -31,7 +31,7 @@ extension UIViewController: ProgressAnimatable {
     
 }
 
-extension UIView: ProgressAnimatable {
+extension UIView: @preconcurrency ProgressAnimatable {
     
     public func setLoadingStatus(_ status: Bool) {
         

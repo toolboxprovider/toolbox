@@ -48,7 +48,7 @@ public extension RequestOutput where T == Void {
         let _ = try await bottleNeck()
     }
     
-    func emptyResponse() -> Single<Void> {
+    func rxEmptyResponse() -> Single<Void> {
         return rxBottleNeck().map { _ in }
     }
     
@@ -70,6 +70,8 @@ public extension RequestOutput {
     
     func bottleNeck( customHandling: Bool ) async throws -> (body: Data, response: HTTPURLResponse?) {
         let request = try await urlRequest()
+        // Create a nonisolated(unsafe) copy so it can be referenced in the @Sendable onCancel closure
+        nonisolated(unsafe) let requestForCancellation = request
         
         return try await withTaskCancellationHandler {
             return try await withCheckedThrowingContinuation { continuation in
@@ -101,7 +103,7 @@ public extension RequestOutput {
                     }
             }
         } onCancel: {
-            request.cancel()
+            requestForCancellation.cancel()
         }
 
     }

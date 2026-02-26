@@ -9,7 +9,7 @@ import UIKit
 import RxSwift
 import ObjectiveC
 
-fileprivate var rxIndicatorContext: UInt8 = 1
+nonisolated(unsafe) fileprivate var rxIndicatorContext: UInt8 = 1
 
 public extension Reactive where Base: UIView {
     

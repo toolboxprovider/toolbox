@@ -10,7 +10,7 @@ import RxSwift
 import RxCocoa
 import Alamofire
 
-var appConfig: App.StaticConfig!
+nonisolated(unsafe) var appConfig: App.StaticConfig!
 
 public enum App {
 
@@ -229,6 +229,27 @@ extension App.Store {
         
         return str
     }
+    
+    var observable: UIObservable {
+        .init(initial: slice, changes: changes)
+    }
+    
+    @Observable
+    class UIObservable {
+        
+        var state: T
+        private let bag = DisposeBag()
+        
+        init(initial: T, changes: Driver<T>) {
+            state = initial
+            changes.drive(onNext: { x in
+                self.state = x
+            })
+            .disposed(by: bag)
+            
+        }
+        
+    }
 }
 
 public extension App {
@@ -248,3 +269,5 @@ public extension App {
         return d
     }
 }
+
+

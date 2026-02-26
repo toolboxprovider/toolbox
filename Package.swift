@@ -1,11 +1,11 @@
-// swift-tools-version: 5.6
+// swift-tools-version: 5.9
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
 let package = Package(
     name: "Toolbox",
-    platforms: [ .iOS(.v13) ],
+    platforms: [ .iOS(.v17) ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
@@ -24,12 +24,17 @@ let package = Package(
         .target(
             name: "Toolbox",
             dependencies: [
-                .productItem(name: "RxSwift", package: "RxSwift", condition: nil),
-                .productItem(name: "RxCocoa", package: "RxSwift", condition: nil),
-                .productItem(name: "SnapKit", package: "SnapKit", condition: nil),
-                .productItem(name: "Kingfisher", package: "Kingfisher", condition: nil),
-                .productItem(name: "Alamofire", package: "Alamofire", condition: nil),
+                .product(name: "RxSwift", package: "RxSwift", condition: nil),
+                .product(name: "RxCocoa", package: "RxSwift", condition: nil),
+                .product(name: "SnapKit", package: "SnapKit", condition: nil),
+                .product(name: "Kingfisher", package: "Kingfisher", condition: nil),
+                .product(name: "Alamofire", package: "Alamofire", condition: nil),
+            ],
+            swiftSettings: [
+                // This flag effectively reverts strict checking to a minimal level
+                .unsafeFlags(["-Xfrontend", "-strict-concurrency=targeted"])
             ]
         )
     ]
 )
+

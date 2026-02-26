@@ -19,11 +19,9 @@ public extension ObservableConvertibleType {
         return self.asObservable()
             .map { Swift.Result<Self.Element, Error>.success($0) }
             .catch { [weak h = handler] (error) -> Observable<Swift.Result<Element, Error>> in
-            
                 DispatchQueue.main.async {
                     h?.present(error: error, callback: callback)
                 }
-                
                 return .empty()
             }
             .filter {
@@ -46,3 +44,4 @@ public extension ObservableConvertibleType {
     }
     
 }
+
