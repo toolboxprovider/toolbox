@@ -13,12 +13,18 @@ import SwiftUI
 final class Effects {
     typealias Job = @Sendable @MainActor () async throws -> Void
     typealias JobWithParam<T> = @Sendable @MainActor (T) async throws -> Void
+    struct ErrorPresentation {
+        let title: String
+        let message: String
+    }
+    
     private struct WorkItem: Sendable {
         let trackProgress: Bool
+        let showsError: Bool
         let job: Job
     }
 
-    var error: Error? = nil
+    var error: ErrorPresentation? = nil
     var progressCount = 0
     private var isStarted = false
 
@@ -33,19 +39,19 @@ final class Effects {
         self.continuation = cont
     }
 
-    func run(trackProgress: Bool = false, _ job: @escaping Job) {
-        continuation?.yield(.init(trackProgress: trackProgress, job: job))
+    func run(trackProgress: Bool = false, showsError: Bool = true, _ job: @escaping Job) {
+        continuation?.yield(.init(trackProgress: trackProgress, showsError: showsError, job: job))
     }
 
-    func run(trackProgress: Bool = false, job: @escaping Job) -> Command {
+    func run(trackProgress: Bool = false, showsError: Bool = true, job: @escaping Job) -> Command {
         Command { [weak self] in
-            self?.run(trackProgress: trackProgress, job)
+            self?.run(trackProgress: trackProgress, showsError: showsError, job)
         }
     }
     
-    func run<T>(trackProgress: Bool = false, job: @escaping JobWithParam<T>) -> CommandWith<T> {
+    func run<T>(trackProgress: Bool = false, showsError: Bool = true, job: @escaping JobWithParam<T>) -> CommandWith<T> {
         CommandWith { [weak self] t in
-            self?.run(trackProgress: trackProgress, { try await job(t) })
+            self?.run(trackProgress: trackProgress, showsError: showsError, { try await job(t) })
         }
     }
     
@@ -65,7 +71,9 @@ final class Effects {
                         try await workItem.job()
                     } catch is CancellationError {
                     } catch {
-                        await presentError(error)
+                        if workItem.showsError {
+                            await presentError(error)
+                        }
                     }
                     if workItem.trackProgress { await decrement() }
                     
@@ -76,7 +84,21 @@ final class Effects {
     
     private func increment() { progressCount += 1 }
     private func decrement() { progressCount -= 1 }
-    private func presentError(_ er: Error?) { error = er }
+    
+    private func mapError(_ er: Error) -> ErrorPresentation? {
+        if case .canceled? = er as? AppError {
+            return nil
+        }
+        if case .generic(let description)? = er as? AppError {
+            return .init(title: "Error", message: description)
+        }
+        if let (title, message) = appConfig.customError(er) {
+            return .init(title: title, message: message)
+        }
+        return .init(title: "Error", message: er.localizedDescription)
+    }
+    
+    private func presentError(_ er: Error) { error = mapError(er) }
     
 }
 
@@ -98,7 +120,7 @@ private struct EffectsPresentationModifier: ViewModifier {
             }
             .animation(.easeInOut(duration: 0.2), value: effects.progressCount > 0)
             .alert(
-                "Error",
+                effects.error?.title ?? "Error",
                 isPresented: Binding(
                     get: { effects.error != nil },
                     set: { if !$0 { effects.error = nil } }
@@ -106,7 +128,7 @@ private struct EffectsPresentationModifier: ViewModifier {
             ) {
                 Button("OK") { effects.error = nil }
             } message: {
-                Text(effects.error?.localizedDescription ?? "")
+                Text(effects.error?.message ?? "")
             }
             .task {
                 await effects.start()
