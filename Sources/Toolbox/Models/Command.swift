@@ -187,33 +187,39 @@ public extension UIViewController {
     }
 }
 
-public struct Selectable<T> {
-    public let data: T
-    public let command: CommandWith<T>
-    
-    public init(data: T, command: CommandWith<T>) {
-        self.data = data
-        self.command = command
+import SwiftUI
+
+public struct StateCommand<T>: Hashable where T: Hashable {
+    let state: T
+    let change: CommandWith<T>
+    var swiftUIBinding: Binding<T> {
+        Binding(
+            get: { state },
+            set: { change(with: $0) }
+        )
     }
-    
-    public func select() {
-        command.perform(with: data)
+
+    public static func == (lhs: StateCommand<T>, rhs: StateCommand<T>) -> Bool {
+        lhs.state == rhs.state
     }
-    
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(state)
+    }
 }
 
-public extension Selectable where T == Bool {
+public extension StateCommand where T == Bool {
     
     func toggle() {
-        command.perform(with: !data)
+        change.perform(with: !state)
     }
     
 }
 
-public extension Array {
+public extension Array where Element: Hashable {
     
-    func convert( select: CommandWith<Element> ) -> [Selectable<Element>] {
-        map { Selectable(data: $0, command: select) }
+    func convert( select: CommandWith<Element> ) -> [StateCommand<Element>] {
+        map { StateCommand(state: $0, change: select) }
     }
     
 }
