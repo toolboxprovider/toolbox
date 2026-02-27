@@ -141,3 +141,47 @@ public extension View {
         modifier(EffectsPresentationModifier(effects: effects))
     }
 }
+
+@Observable
+public final class LocalStore<State> {
+    
+    private(set) var state: State
+
+    init(state: State) {
+        self.state = state
+    }
+    
+    func mutate( _ mutator: (inout State) -> Void ) {
+        mutator(&state)
+    }
+    
+    func mutateCommand( _ mutator: @escaping (inout State) -> Void ) -> Command {
+        Command {
+            mutator(&self.state)
+        }
+    }
+    
+    func mutate<T>( _ keyPath: WritableKeyPath<State, T> ) -> CommandWith<T> {
+        CommandWith { t in
+            self.state[keyPath: keyPath] = t
+        }
+    }
+    
+    func mutate<T>( _ keyPath: WritableKeyPath<State, T?> ) -> CommandWith<T> {
+        return CommandWith { t in
+            self.state[keyPath: keyPath] = t
+        }
+    }
+    
+    func mutate<T>( _ keyPath: WritableKeyPath<State, T>, default d: T ) -> CommandWith<T?> {
+        return CommandWith { t in
+            self.state[keyPath: keyPath] = t ?? d
+        }
+    }
+    
+    func mutateCommand<T>( _ mutator: @escaping (inout State, T) -> Void ) -> CommandWith<T> {
+        return CommandWith { t in
+            mutator(&self.state, t)
+        }
+    }
+}
