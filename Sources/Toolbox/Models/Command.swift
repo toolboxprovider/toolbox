@@ -190,6 +190,7 @@ public extension UIViewController {
 import SwiftUI
 
 public struct StateCommand<T>: Hashable where T: Hashable {
+    
     let state: T
     let change: CommandWith<T>
     public var swiftUIBinding: Binding<T> {
@@ -199,6 +200,12 @@ public struct StateCommand<T>: Hashable where T: Hashable {
         )
     }
 
+    public init(state: T, change: CommandWith<T>) {
+        self.state = state
+        self.change = change
+    }
+    
+    
     public static func == (lhs: StateCommand<T>, rhs: StateCommand<T>) -> Bool {
         lhs.state == rhs.state
     }
