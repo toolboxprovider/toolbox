@@ -10,7 +10,7 @@ import SwiftUI
 
 @MainActor
 @Observable
-final class Effects {
+public final class Effects {
     typealias Job = @Sendable @MainActor () async throws -> Void
     typealias JobWithParam<T> = @Sendable @MainActor (T) async throws -> Void
     struct ErrorPresentation {
@@ -102,7 +102,7 @@ final class Effects {
     
 }
 
-private struct EffectsPresentationModifier: ViewModifier {
+public struct EffectsPresentationModifier: ViewModifier {
     @Bindable var effects: Effects
 
     func body(content: Content) -> some View {
@@ -136,7 +136,7 @@ private struct EffectsPresentationModifier: ViewModifier {
     }
 }
 
-extension View {
+public extension View {
     func withEffects(_ effects: Effects) -> some View {
         modifier(EffectsPresentationModifier(effects: effects))
     }
