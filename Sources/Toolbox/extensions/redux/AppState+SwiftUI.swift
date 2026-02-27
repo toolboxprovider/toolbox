@@ -31,7 +31,7 @@ public final class Effects {
     private var continuation: AsyncStream<WorkItem>.Continuation?
     private let stream: AsyncStream<WorkItem>
 
-    init() {
+    public init() {
         var cont: AsyncStream<WorkItem>.Continuation?
         self.stream = AsyncStream(WorkItem.self) { c in
             cont = c
@@ -105,7 +105,7 @@ public final class Effects {
 public struct EffectsPresentationModifier: ViewModifier {
     @Bindable var effects: Effects
 
-    func body(content: Content) -> some View {
+    public func body(content: Content) -> some View {
         content
             .overlay {
                 if effects.progressCount > 0 {
@@ -147,9 +147,13 @@ public final class LocalStore<State> {
     
     private(set) var state: State
 
-    init(state: State) {
+    public init(state: State) {
         self.state = state
     }
+    
+}
+
+public extension LocalStore {
     
     func mutate( _ mutator: (inout State) -> Void ) {
         mutator(&state)
