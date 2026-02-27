@@ -187,7 +187,7 @@ public extension LocalStore {
         mutator(&state)
     }
     
-    func mutateCommand( _ mutator: @escaping (inout State) -> Void ) -> Command {
+    func mutate( _ mutator: @escaping (inout State) -> Void ) -> Command {
         Command {
             mutator(&self.state)
         }
@@ -211,7 +211,7 @@ public extension LocalStore {
         }
     }
     
-    func mutateCommand<T>( _ mutator: @escaping (inout State, T) -> Void ) -> CommandWith<T> {
+    func mutate<T>( _ mutator: @escaping (inout State, T) -> Void ) -> CommandWith<T> {
         return CommandWith { t in
             mutator(&self.state, t)
         }
