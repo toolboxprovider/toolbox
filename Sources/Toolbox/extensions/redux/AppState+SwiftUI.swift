@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import UIKit
 
 @MainActor
 @Observable
@@ -111,7 +112,7 @@ public struct EffectsPresentationModifier: ViewModifier {
                 if effects.progressCount > 0 {
                     ZStack {
                         Color.black.opacity(0.12)
-                        ProgressView()
+                        ViewProgress(image: appConfig.loaderImage)
                             .padding(16)
                             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
                     }
@@ -136,6 +137,33 @@ public struct EffectsPresentationModifier: ViewModifier {
     }
 }
 
+private struct ViewProgress: View {
+    let image: UIImage?
+    @State private var animateRotation = false
+
+    var body: some View {
+        Group {
+            if let image {
+                Image(uiImage: image)
+                    .rotationEffect(.degrees(animateRotation ? 360 : 0))
+                    .animation(.linear(duration: 1.2).repeatForever(autoreverses: false), value: animateRotation)
+                    .onAppear {
+                        animateRotation = true
+                    }
+                    .onDisappear {
+                        animateRotation = false
+                    }
+            } else {
+                ProgressView()
+            }
+        }
+    }
+}
+
+#Preview {
+    ViewProgress(image: nil)
+}
+
 public extension View {
     func withEffects(_ effects: Effects) -> some View {
         modifier(EffectsPresentationModifier(effects: effects))
@@ -145,7 +173,7 @@ public extension View {
 @Observable
 public final class LocalStore<State> {
     
-    private(set) var state: State
+    private(set) public var state: State
 
     public init(state: State) {
         self.state = state

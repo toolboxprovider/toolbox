@@ -8,11 +8,36 @@
 
 import UIKit
 
-public class SpinnerView : UIImageView {
+public final class SpinnerView: UIView {
     
-    convenience init() {
-        self.init(image: appConfig.loaderImage)
-        
+    public convenience init() {
+        self.init(loaderImage: appConfig.loaderImage)
+    }
+
+    public init(loaderImage: UIImage?) {
+        super.init(frame: .zero)
+        backgroundColor = .clear
+
+        if let loaderImage {
+            let imageView = UIImageView(image: loaderImage)
+            imageView.frame = CGRect(origin: .zero, size: loaderImage.size)
+            imageView.backgroundColor = .clear
+            addSubview(imageView)
+            frame = imageView.frame
+            addRotationAnimation(to: imageView.layer)
+        } else {
+            let indicator = UIActivityIndicatorView(style: .large)
+            indicator.startAnimating()
+            indicator.frame = CGRect(origin: .zero, size: indicator.intrinsicContentSize)
+            addSubview(indicator)
+            frame = indicator.frame
+        }
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    private func addRotationAnimation(to layer: CALayer) {
         let animationDuration: CFTimeInterval = 1.6
         let linearCurve = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
         
@@ -26,8 +51,6 @@ public class SpinnerView : UIImageView {
         animation.fillMode = CAMediaTimingFillMode.forwards
         animation.autoreverses = false
         layer.add(animation, forKey: "rotate")
-        
-        backgroundColor = UIColor.clear
     }
     
 }

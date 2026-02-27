@@ -19,7 +19,7 @@ public enum App {
         public typealias AuthRequestHeaders = (inout [String: String]) async -> Void
         public typealias CustomErrorMapper = (Error, Data) -> Error?
         
-        public init(loaderImage: UIImage = UIImage(named: "spring_indicator")!,
+        public init(loaderImage: UIImage? = nil,
                     loaderBackgroundAlpha: CGFloat = 0.5,
                     initialsStyle: InitialsStyle? = nil,
                     customError: @escaping CustomErrorPresentation = { _ in nil },
@@ -35,7 +35,7 @@ public enum App {
             self.network = network
         }
         
-        let loaderImage: UIImage
+        let loaderImage: UIImage?
         let loaderBackgroundAlpha: CGFloat
         let initialsStyle: InitialsStyle
         let customError: CustomErrorPresentation
@@ -269,5 +269,4 @@ public extension App {
         return d
     }
 }
-
 
