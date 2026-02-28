@@ -12,9 +12,9 @@ import UIKit
 @MainActor
 @Observable
 public final class Effects {
-    typealias Job = @Sendable @MainActor () async throws -> Void
-    typealias JobWithParam<T> = @Sendable @MainActor (T) async throws -> Void
-    struct ErrorPresentation {
+    public typealias Job = @Sendable @MainActor () async throws -> Void
+    public typealias JobWithParam<T> = @Sendable @MainActor (T) async throws -> Void
+    public struct ErrorPresentation {
         let title: String
         let message: String
     }
@@ -25,8 +25,8 @@ public final class Effects {
         let job: Job
     }
 
-    var error: ErrorPresentation? = nil
-    var progressCount = 0
+    public var error: ErrorPresentation? = nil
+    public var progressCount = 0
     private var isStarted = false
 
     private var continuation: AsyncStream<WorkItem>.Continuation?
@@ -40,23 +40,23 @@ public final class Effects {
         self.continuation = cont
     }
 
-    func run(trackProgress: Bool = false, showsError: Bool = true, _ job: @escaping Job) {
+    public func run(trackProgress: Bool = false, showsError: Bool = true, _ job: @escaping Job) {
         continuation?.yield(.init(trackProgress: trackProgress, showsError: showsError, job: job))
     }
 
-    func run(trackProgress: Bool = false, showsError: Bool = true, job: @escaping Job) -> Command {
+    public func run(trackProgress: Bool = false, showsError: Bool = true, job: @escaping Job) -> Command {
         Command { [weak self] in
             self?.run(trackProgress: trackProgress, showsError: showsError, job)
         }
     }
     
-    func run<T>(trackProgress: Bool = false, showsError: Bool = true, job: @escaping JobWithParam<T>) -> CommandWith<T> {
+    public func run<T>(trackProgress: Bool = false, showsError: Bool = true, job: @escaping JobWithParam<T>) -> CommandWith<T> {
         CommandWith { [weak self] t in
             self?.run(trackProgress: trackProgress, showsError: showsError, { try await job(t) })
         }
     }
     
-    func start() async {
+    public func start() async {
         guard !isStarted else { return }
         isStarted = true
         defer { isStarted = false }
