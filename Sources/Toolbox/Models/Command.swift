@@ -191,8 +191,8 @@ import SwiftUI
 
 public struct StateCommand<T>: Hashable where T: Hashable {
     
-    let state: T
-    let change: CommandWith<T>
+    public let state: T
+    public let change: CommandWith<T>
     public var swiftUIBinding: Binding<T> {
         Binding(
             get: { state },
