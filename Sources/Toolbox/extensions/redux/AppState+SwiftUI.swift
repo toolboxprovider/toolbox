@@ -14,6 +14,7 @@ import UIKit
 public final class Effects {
     public typealias Job = @Sendable @MainActor () async throws -> Void
     public typealias JobWithParam<T> = @Sendable @MainActor (T) async throws -> Void
+    public typealias Unique = (id: UUID, debounce: TimeInterval?)
     public struct ErrorPresentation {
         let title: String
         let message: String
@@ -22,7 +23,17 @@ public final class Effects {
     private struct WorkItem: Sendable {
         let trackProgress: Bool
         let showsError: Bool
+        let unique: Unique?
         let job: Job
+    }
+    
+    private enum TaskKey: Hashable {
+        case unique(UUID), regular(UUID)
+    }
+    
+    private struct ActiveTask {
+        let token: UUID
+        let task: Task<Void, Never>
     }
 
     public var error: ErrorPresentation? = nil
@@ -31,6 +42,7 @@ public final class Effects {
 
     private var continuation: AsyncStream<WorkItem>.Continuation?
     private let stream: AsyncStream<WorkItem>
+    private var activeTasks: [TaskKey: ActiveTask] = [:]
 
     public init() {
         var cont: AsyncStream<WorkItem>.Continuation?
@@ -40,48 +52,70 @@ public final class Effects {
         self.continuation = cont
     }
 
-    public func run(trackProgress: Bool = false, showsError: Bool = true, _ job: @escaping Job) {
-        continuation?.yield(.init(trackProgress: trackProgress, showsError: showsError, job: job))
+    public func run(trackProgress: Bool = false, showsError: Bool = true, unique: Unique? = nil, _ job: @escaping Job) {
+        continuation?.yield(.init(trackProgress: trackProgress, showsError: showsError, unique: unique, job: job))
     }
 
-    public func run(trackProgress: Bool = false, showsError: Bool = true, job: @escaping Job) -> Command {
+    public func run(trackProgress: Bool = false, showsError: Bool = true, unique: Unique? = nil, job: @escaping Job) -> Command {
         Command { [weak self] in
-            self?.run(trackProgress: trackProgress, showsError: showsError, job)
+            self?.run(trackProgress: trackProgress, showsError: showsError, unique: unique, job)
         }
     }
     
-    public func run<T>(trackProgress: Bool = false, showsError: Bool = true, job: @escaping JobWithParam<T>) -> CommandWith<T> {
+    public func run<T>(trackProgress: Bool = false, showsError: Bool = true, unique: Unique? = nil, job: @escaping JobWithParam<T>) -> CommandWith<T> {
         CommandWith { [weak self] t in
-            self?.run(trackProgress: trackProgress, showsError: showsError, { try await job(t) })
+            self?.run(trackProgress: trackProgress, showsError: showsError, unique: unique, { try await job(t) })
         }
     }
     
     public func start() async {
         guard !isStarted else { return }
         isStarted = true
-        defer { isStarted = false }
+        defer {
+            activeTasks.values.forEach { $0.task.cancel() }
+            activeTasks.removeAll()
+            isStarted = false
+        }
         
-        await withDiscardingTaskGroup { group in
-            for await workItem in stream {
-                if Task.isCancelled { break }
-                group.addTask { [weak self] in
-                    guard let self else { return }
-                    
-                    if workItem.trackProgress { await increment() }
-                    do {
-                        try await workItem.job()
-                    } catch is CancellationError {
-                    } catch {
-                        if workItem.showsError {
-                            await presentError(error)
-                        }
-                    }
-                    if workItem.trackProgress { await decrement() }
-                    
-                }
+        for await workItem in stream {
+            if Task.isCancelled { break }
+            let key: TaskKey
+            if let unique = workItem.unique {
+                key = .unique(unique.id)
+                activeTasks[key]?.task.cancel()
+            } else {
+                key = .regular(UUID())
             }
+            let token = UUID()
+            let task = Task { [weak self] in
+                
+                do {
+                    
+                    if let debounce = workItem.unique?.debounce, debounce > 0 {
+                        try await Task.sleep(for: .seconds(debounce))
+                    }
+                    if Task.isCancelled { return }
+                    if workItem.trackProgress { self?.increment() }
+                    defer {
+                        if workItem.trackProgress { self?.decrement() }
+                    }
+                    try await workItem.job()
+                    
+                } catch is CancellationError {
+                } catch {
+                    if workItem.showsError {
+                        self?.error = self?.mapError(error)
+                    }
+                }
+                
+                guard self?.activeTasks[key]?.token == token else { return }
+                self?.activeTasks[key] = nil
+                
+            }
+            activeTasks[key] = .init(token: token, task: task)
         }
     }
+    
     
     private func increment() { progressCount += 1 }
     private func decrement() { progressCount -= 1 }
@@ -99,7 +133,6 @@ public final class Effects {
         return .init(title: "Error", message: er.localizedDescription)
     }
     
-    private func presentError(_ er: Error) { error = mapError(er) }
     
 }
 
