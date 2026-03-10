@@ -141,7 +141,8 @@ public enum App {
             
             queue.async { [unowned self] in
                 
-                var dscr = "\(action)"
+                let dscrAction = (action as? CustomStringConvertible)?.description ?? String(describing: action)
+                var dscr = dscrAction
                 if let x = actor?.description {
                     dscr.append(" by \(x) actor")
                 }
@@ -162,7 +163,8 @@ public enum App {
             
             queue.sync { [unowned self] in
                 
-                var dscr = "\(action)"
+                let dscrAction = (action as? CustomStringConvertible)?.description ?? String(describing: action)
+                var dscr = dscrAction
                 if let x = actor?.description {
                     dscr.append(" by \(x) actor")
                 }
@@ -269,4 +271,3 @@ public extension App {
         return d
     }
 }
-
