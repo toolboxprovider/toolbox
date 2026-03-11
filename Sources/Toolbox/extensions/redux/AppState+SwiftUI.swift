@@ -16,8 +16,8 @@ public final class Effects {
     public typealias JobWithParam<T> = @Sendable @MainActor (T) async throws -> Void
     public typealias Unique = (id: UUID, debounce: TimeInterval?)
     public struct ErrorPresentation {
-        let title: String
-        let message: String
+        public let title: String
+        public let message: String
     }
     
     private struct WorkItem: Sendable {
