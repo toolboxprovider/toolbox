@@ -203,6 +203,19 @@ public extension View {
     }
 }
 
+@propertyWrapper
+public struct GlobalState<AppStateValue: AppStateT>: DynamicProperty {
+    @State private var observable: App.Store<AppStateValue>.UIObservable
+
+    public init(_ store: App.Store<AppStateValue>) {
+        _observable = State(initialValue: store.observable)
+    }
+
+    public var wrappedValue: AppStateValue {
+        observable.state
+    }
+}
+
 @Observable
 public final class LocalStore<State> {
     
