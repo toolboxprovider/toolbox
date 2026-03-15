@@ -144,10 +144,9 @@ public struct EffectsPresentationModifier: ViewModifier {
             .overlay {
                 if effects.progressCount > 0 {
                     ZStack {
-                        Color.black.opacity(0.12)
                         ViewProgress(image: appConfig.loaderImage)
                             .padding(16)
-                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                            .background(.darkMaterial, in: RoundedRectangle(cornerRadius: 12))
                     }
                     .transition(.opacity)
                 }
