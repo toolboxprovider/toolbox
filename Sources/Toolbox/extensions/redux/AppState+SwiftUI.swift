@@ -229,6 +229,24 @@ public final class LocalStore<State> {
 
 public extension LocalStore {
     
+    subscript<T>(_ keyPath: WritableKeyPath<State, T>) -> T {
+        get { state[keyPath: keyPath] }
+        set { state[keyPath: keyPath] = newValue }
+    }
+    
+    subscript<T>(_ keyPath: WritableKeyPath<State, T>, withAnimation animation: Animation?) -> T {
+        get { state[keyPath: keyPath] }
+        set {
+            guard let animation else {
+                state[keyPath: keyPath] = newValue
+                return
+            }
+            withAnimation(animation) {
+                state[keyPath: keyPath] = newValue
+            }
+        }
+    }
+    
     func mutate( _ mutator: (inout State) -> Void ) {
         mutator(&state)
     }
@@ -241,19 +259,25 @@ public extension LocalStore {
     
     func mutate<T>( _ keyPath: WritableKeyPath<State, T> ) -> CommandWith<T> {
         CommandWith { t in
-            self.state[keyPath: keyPath] = t
+            self[keyPath] = t
         }
     }
     
     func mutate<T>( _ keyPath: WritableKeyPath<State, T?> ) -> CommandWith<T> {
         return CommandWith { t in
-            self.state[keyPath: keyPath] = t
+            self[keyPath] = t
+        }
+    }
+    
+    func mutate<T>( _ keyPath: WritableKeyPath<State, T>, withAnimation animation: Animation? ) -> CommandWith<T> {
+        CommandWith { t in
+            self[keyPath, withAnimation: animation] = t
         }
     }
     
     func mutate<T>( _ keyPath: WritableKeyPath<State, T>, default d: T ) -> CommandWith<T?> {
         return CommandWith { t in
-            self.state[keyPath: keyPath] = t ?? d
+            self[keyPath] = t ?? d
         }
     }
     
