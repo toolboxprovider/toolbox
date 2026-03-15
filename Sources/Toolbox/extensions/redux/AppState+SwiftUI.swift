@@ -231,7 +231,7 @@ public struct GlobalState<AppStateValue: AppStateT>: DynamicProperty {
 @Observable
 public final class LocalStore<State> {
     
-    private(set) public var state: State
+    public var state: State
 
     public init(state: State) {
         self.state = state
