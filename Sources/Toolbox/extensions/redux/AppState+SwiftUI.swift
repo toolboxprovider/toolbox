@@ -146,7 +146,10 @@ public struct EffectsPresentationModifier: ViewModifier {
                     ZStack {
                         ViewProgress(image: appConfig.loaderImage)
                             .padding(16)
-                            .background(.darkMaterial, in: RoundedRectangle(cornerRadius: 12))
+                            .background {
+                                DarkMaterialBackground()
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                            }
                     }
                     .transition(.opacity)
                 }
@@ -189,6 +192,16 @@ private struct ViewProgress: View {
                 ProgressView()
             }
         }
+    }
+}
+
+private struct DarkMaterialBackground: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIVisualEffectView {
+        UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterialDark))
+    }
+
+    func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
+        uiView.effect = UIBlurEffect(style: .systemMaterialDark)
     }
 }
 
