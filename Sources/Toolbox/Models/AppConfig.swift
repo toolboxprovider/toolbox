@@ -232,14 +232,14 @@ extension App.Store {
         return str
     }
     
-    var observable: UIObservable {
+    public var observable: UIObservable {
         .init(initial: slice, changes: changes)
     }
     
     @Observable
-    class UIObservable {
+    public class UIObservable {
         
-        var state: T
+        public var state: T
         private let bag = DisposeBag()
         
         init(initial: T, changes: Driver<T>) {
