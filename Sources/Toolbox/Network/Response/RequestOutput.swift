@@ -23,6 +23,10 @@ public struct ConcreteRequest<T>: RequestOutput {
     
     let x: Alamofire.DataRequest
     
+    public init(x: Alamofire.DataRequest) {
+        self.x = x
+    }
+    
     public func urlRequest() async throws -> DataRequest {
         return x
     }
