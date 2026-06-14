@@ -196,12 +196,20 @@ private struct ViewProgress: View {
 }
 
 private struct DarkMaterialBackground: UIViewRepresentable {
+    private var blurStyle: UIBlurEffect.Style {
+        #if os(tvOS)
+        .dark
+        #else
+        .systemMaterialDark
+        #endif
+    }
+
     func makeUIView(context: Context) -> UIVisualEffectView {
-        UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterialDark))
+        UIVisualEffectView(effect: UIBlurEffect(style: blurStyle))
     }
 
     func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
-        uiView.effect = UIBlurEffect(style: .systemMaterialDark)
+        uiView.effect = UIBlurEffect(style: blurStyle)
     }
 }
 
