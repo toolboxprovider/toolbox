@@ -1,5 +1,12 @@
 # Toolbox
 
+The package exposes two library products:
+
+- `ToolboxCore`: Foundation utilities, identifiers, decoding defaults, version and build configuration values, Redux protocols, and UserDefaults persistence. No external dependencies.
+- `Toolbox`: the full library, including reactive state, settings, networking, and UI integrations. It depends on and re-exports ToolboxCore, so existing clients can keep `import Toolbox`.
+
+Use `import ToolboxCore` for model and reducer code that does not need the runtime integrations. `ReduxAction.dispatch(into:)` and the store remain in Toolbox. The shared declarations and implementations have moved into Core without changing their behavior; consumers must rebuild after updating.
+
 1) .gitignore
 2) Add project folder structure
 3) Add xcode adhoc environment (adhoc env variable)

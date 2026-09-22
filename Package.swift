@@ -7,6 +7,7 @@ let package = Package(
     name: "Toolbox",
     platforms: [.iOS(.v17), .tvOS(.v17), .macOS(.v10_14), .watchOS(.v10)],
     products: [
+        .library(name: "ToolboxCore", targets: ["ToolboxCore"]),
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "Toolbox",
@@ -19,11 +20,13 @@ let package = Package(
         .package(url: "https://github.com/Alamofire/Alamofire", branch: "master"),
     ],
     targets: [
+        .target(name: "ToolboxCore"),
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "Toolbox",
             dependencies: [
+                "ToolboxCore",
                 .product(name: "RxSwift", package: "RxSwift", condition: nil),
                 .product(name: "RxCocoa", package: "RxSwift", condition: nil),
                 .product(name: "SnapKit", package: "SnapKit", condition: nil),
