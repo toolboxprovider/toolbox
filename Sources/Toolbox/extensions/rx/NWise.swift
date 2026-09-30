@@ -54,10 +54,14 @@ public struct FullDiff<T: Sequence>: Equatable where T.Element: Identifiable & E
     public let added: [T.Element]
     public let changed: [T.Element]
     
-    public init(from: T, to: T) {
+    public init(
+        from: T,
+        to: T,
+        uniquingKeysWith combine: (T.Element, T.Element) -> T.Element = { first, _ in first }
+    ) {
         
-        let fromMap = Dictionary(uniqueKeysWithValues: from.map { ($0.id, $0) })
-        let toMap   = Dictionary(uniqueKeysWithValues: to.map { ($0.id, $0) })
+        let fromMap = Dictionary(from.map { ($0.id, $0) }, uniquingKeysWith: combine)
+        let toMap   = Dictionary(to.map { ($0.id, $0) }, uniquingKeysWith: combine)
         
         let fromSet = Set(fromMap.keys)
         let toSet = Set(toMap.keys)
@@ -80,14 +84,16 @@ public struct FullDiff<T: Sequence>: Equatable where T.Element: Identifiable & E
 
 public extension ObservableType where Element: Sequence & ExpressibleByArrayLiteral, Element.Element: Equatable & Identifiable {
     
-    func diff(  ) -> Observable<FullDiff<Element>> {
+    func diff(
+        uniquingKeysWith combine: @escaping (Element.Element, Element.Element) -> Element.Element = { first, _ in first }
+    ) -> Observable<FullDiff<Element>> {
         
         return self.scan([]) { acc, item in Array((acc + [item]).suffix(2)) }
             .map { x in
                 
-                if x.count == 1 { return FullDiff(from: [], to: x[0]) }
+                if x.count == 1 { return FullDiff(from: [], to: x[0], uniquingKeysWith: combine) }
                 
-                return FullDiff(from: x[0], to: x[1])
+                return FullDiff(from: x[0], to: x[1], uniquingKeysWith: combine)
             }
             .distinctUntilChanged()
             
