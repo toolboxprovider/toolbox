@@ -14,7 +14,9 @@ public protocol BaseRequest {
 }
 public extension BaseRequest {
     func rxResponse() -> Single<T> {
-        .fromAsync(f: response)
+        Single.create {
+            try await response()
+        }
     }
 }
 
